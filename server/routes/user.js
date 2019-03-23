@@ -3,17 +3,21 @@ const app = express();
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const User = require('../models/user');
+const { verificaToken, verificaAdmin_Rol } = require('../middlewares/autenticacion');
 
-app.get('/users', (req, res) => {
+app.get('/users', [verificaToken, verificaAdmin_Rol], (req, res) => {
+
     let desde = req.query.desde || 0;
     desde = Number(desde);
 
     let limite = req.query.desde || 5;
     limite = Number(limite);
 
-    User.find({ estado: true }, 'nombre email estado, img, role')
+    User.find({ estado: true }, 'nombre email estado img role')
+        .sort('nombre')
         .skip(desde)
         .limit(limite)
+        .populate('creator', 'nombre')
         .exec((err, users) => {
             if (err) {
                 return res.status(400).json({
@@ -39,14 +43,15 @@ app.get('/users', (req, res) => {
         })
 });
 
-app.post('/user', (req, res) => {
+app.post('/user', [verificaToken, verificaAdmin_Rol], (req, res) => {
     const body = req.body;
 
     const user = new User({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
-        role: body.role
+        role: body.role,
+        creator: req.usuario.id
     });
 
     user.save((err, userDB) => {
@@ -63,7 +68,7 @@ app.post('/user', (req, res) => {
     });
 });
 
-app.put('/user/:id', (req, res) => {
+app.put('/user/:id', [verificaToken, verificaAdmin_Rol], (req, res) => {
     const id = req.params.id;
     const body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
 
@@ -82,7 +87,7 @@ app.put('/user/:id', (req, res) => {
 });
 
 // Deshabilitar el registro, o cambiar el estado.
-app.delete('/user/:id', (req, res) => {
+app.delete('/user/:id', [verificaToken, verificaAdmin_Rol], (req, res) => {
     let id = req.params.id;
     let cambiaEstado = {
         estado: false

@@ -11,8 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(require('./routes/index'));
 
 // Conexion a mongodb
-mongoose.set('useCreateIndex', true);
-mongoose.connect('mongodb://localhost:27017/repuestos', { useNewUrlParser: true }, (err, res) => {
+mongoose.connect(process.env.URLDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }, (err, res) => {
     if (err) {
         throw err;
     }

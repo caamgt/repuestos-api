@@ -33,6 +33,14 @@ const userSchema = new Schema({
     estado: {
         type: Boolean,
         default: true
+    },
+    creado: {
+        type: Date,
+        default: Date.now
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 
