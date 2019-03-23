@@ -26,7 +26,7 @@ let urlDB;
 if (process.env.NODE_ENV === 'dev') {
     urlDB = 'mongodb://localhost:27017/repuestos';
 } else {
-    urlDB = 'mongodb://repadmin:Glt2019@ds159220.mlab.com:59220/repuestos-glt';
+    urlDB = process.env.MONGO_URI;
 }
 
 process.env.URLDB = urlDB;
