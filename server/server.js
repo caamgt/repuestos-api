@@ -2,11 +2,12 @@ require('./config/config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
 
+app.use(cors());
 // application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-
 // Configuración global de rutas
 app.use(require('./routes/index'));
 
