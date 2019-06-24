@@ -1,22 +1,23 @@
 const express = require('express');
-const Category = require('../models/category');
+const Categoria = require('../models/categoria');
 const { verificaToken } = require('../middlewares/autenticacion');
 const _ = require('underscore');
 const app = express();
 
 app.get('/categorias', verificaToken, (req, res) => {
 
-    Category.find({ estado: true })
+    Categoria.find({ estado: true })
         .sort('nombre')
+        .populate({ path: 'modelo', Model: 'Modelo', populate: [{ path: 'linea', model: 'Linea', populate: { path: 'marca', model: 'Marca', select: 'nombre', codigo: 'codigo' } }] })
         .populate('creator', 'nombre')
-        .exec((err, categorys) => {
+        .exec((err, categorias) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
                     err
                 });
             }
-            Category.countDocuments({ estado: true }, (err, totalCategorys) => {
+            Categoria.countDocuments({ estado: true }, (err, totalCategorias) => {
                 if (err) {
                     return res.status.json({
                         ok: false,
@@ -25,8 +26,8 @@ app.get('/categorias', verificaToken, (req, res) => {
                 }
                 return res.json({
                     ok: true,
-                    categorys,
-                    totalCategorys
+                    categorias,
+                    totalCategorias
                 });
             });
         })
@@ -35,8 +36,9 @@ app.get('/categorias', verificaToken, (req, res) => {
 app.get('/categoria/:id', verificaToken, (req, res) => {
     const id = req.params.id;
 
-    Category.findById(id)
+    Categoria.findById(id)
         .populate('creator', 'nombre')
+        .populate('linea')
         .exec((err, categoryDB) => {
             if (err) {
                 return res.status(400).json({
@@ -63,13 +65,14 @@ app.get('/categoria/:id', verificaToken, (req, res) => {
 app.post('/categoria', verificaToken, (req, res) => {
     const body = req.body;
 
-    const category = new Category({
+    const categoria = new Categoria({
         nombre: body.nombre,
         descripcion: body.descripcion,
+        codigo: body.codigo,
         creator: req.usuario.id
     });
 
-    category.save((err, categoryDB) => {
+    categoria.save((err, categoryDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -87,7 +90,7 @@ app.put('/categoria/:id', verificaToken, (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'descripcion', 'estado']);
 
-    Category.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, categoryDB) => {
+    Categoria.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, categoryDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -116,7 +119,7 @@ app.put('/categoria/:id', verificaToken, (req, res) => {
 app.delete('/categoria/:id', verificaToken, (req, res) => {
     const id = req.params.id;
 
-    Category.findByIdAndRemove(id, (err, deleteCategory) => {
+    Categoria.findByIdAndRemove(id, (err, deleteCategory) => {
         if (err) {
             return res.status(400).json({
                 ok: false,

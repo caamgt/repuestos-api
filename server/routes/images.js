@@ -1,11 +1,11 @@
 const express = require('express');
-const { verificaToken } = require('../middlewares/autenticacion');
+const { verificaTokenImg } = require('../middlewares/autenticacion');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 
-app.get('/image/:tipo/:img', verificaToken, (req, res) => {
+app.get('/image/:tipo/:img', verificaTokenImg, (req, res) => {
     const tipo = req.params.tipo;
     const img = req.params.img;
 
@@ -15,7 +15,7 @@ app.get('/image/:tipo/:img', verificaToken, (req, res) => {
     if (fs.existsSync(pathImage)) {
         return res.sendFile(pathImage);
     } else {
-        const noImagePath = path.resolve(__dirname, '../assets/no-image.jpg');
+        const noImagePath = path.resolve(__dirname, '../assets/no-imagen.png');
         res.sendFile(noImagePath);
 
     }

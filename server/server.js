@@ -6,7 +6,10 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors());
+app.use('/uploads/products', express.static('uploads/products'));
 // application/x-www-form-urlencoded
+// app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
 app.use(bodyParser.json());
 // Configuración global de rutas
 app.use(require('./routes/index'));

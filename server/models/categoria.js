@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const categorySchema = new Schema({
+const categoriaSchema = new Schema({
     nombre: {
         type: String,
         required: [true, 'Es necesario el nombre de la categoria']
@@ -14,14 +14,14 @@ const categorySchema = new Schema({
         type: Boolean,
         default: true
     },
-    creado: {
-        type: Date,
-        default: Date.now
-    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User'
+    },
+    creado: {
+        type: Date,
+        default: Date.now
     }
 });
 
-module.exports = mongoose.model('Category', categorySchema);
+module.exports = mongoose.model('Categoria', categoriaSchema);

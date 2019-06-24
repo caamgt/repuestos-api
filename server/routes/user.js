@@ -10,10 +10,10 @@ app.get('/users', [verificaToken, verificaAdmin_Rol], (req, res) => {
     let desde = req.query.desde || 0;
     desde = Number(desde);
 
-    let limite = req.query.desde || 5;
+    let limite = req.query.desde || 10;
     limite = Number(limite);
 
-    User.find({ estado: true }, 'nombre email estado img role')
+    User.find({ estado: true }, 'nombre apellido email estado img role')
         .sort('nombre')
         .skip(desde)
         .limit(limite)
@@ -43,11 +43,32 @@ app.get('/users', [verificaToken, verificaAdmin_Rol], (req, res) => {
         })
 });
 
+app.get('/user/:id', verificaToken, (req, res) => {
+    const id = req.params.id;
+
+    User.findById(id)
+        .populate('creator')
+        .exec((err, user) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                });
+            }
+            return res.json({
+                ok: true,
+                user
+            });
+        })
+
+})
+
 app.post('/user', [verificaToken, verificaAdmin_Rol], (req, res) => {
     const body = req.body;
 
     const user = new User({
         nombre: body.nombre,
+        apellido: body.apellido,
         email: body.email,
         password: bcrypt.hashSync(body.password, 10),
         role: body.role,
@@ -68,22 +89,19 @@ app.post('/user', [verificaToken, verificaAdmin_Rol], (req, res) => {
     });
 });
 
-app.put('/user/:id', [verificaToken, verificaAdmin_Rol], (req, res) => {
-    const id = req.params.id;
-    const body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
+app.put('/user/:id', [verificaToken, verificaAdmin_Rol], (req, res, next) => {
+    User.findById(req.params.id, (err, post) => {
+        if (err) return next(err);
 
-    User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, userDB) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
+        _.assign(post, req.body); // update user
+        post.save((err) => {
+            if (err) return next(err);
+            return res.json({
+                ok: true,
+                post
             });
-        }
-        return res.json({
-            ok: true,
-            user: userDB
-        });
-    })
+        })
+    });
 });
 
 // Deshabilitar el registro, o cambiar el estado.

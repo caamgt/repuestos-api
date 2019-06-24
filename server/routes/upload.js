@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
-app.use(fileUpload());
+app.use(fileUpload({ useTempFiles: true }));
 
 app.put('/upload/:tipo/:id', verificaToken, (req, res) => {
     let tipo = req.params.tipo;
@@ -88,16 +88,16 @@ userImage = (id, res, nombreArchivo) => {
                 }
             });
         }
-
         borraArchivo(userDB.img, 'users');
 
         userDB.img = nombreArchivo;
         userDB.save((err, saveUser) => {
             if (err) {
+                borraArchivo(nombreArchivo, 'users');
                 return res.status(400).json({
                     ok: false,
                     err: {
-                        message: 'No fue posible guardar el usuario'
+                        message: 'Imposible obtener el usuario'
                     }
                 });
             }
@@ -106,19 +106,8 @@ userImage = (id, res, nombreArchivo) => {
                 user: saveUser,
                 img: nombreArchivo
             });
-        })
-    })
-}
-
-borraArchivo = (nombreImagen, tipo) => {
-    // Verificar si la imagen existe en el file system.
-    // Primero obtenemos la ruta.
-    let pathImagen = path.resolve(__dirname, `../../uploads/${tipo}/${nombreImagen}`);
-    // Verificamos si existe
-    if (fs.existsSync(pathImagen)) {
-        // Si exite lo borramos
-        fs.unlinkSync(pathImagen);
-    }
+        });
+    });
 }
 
 productImage = (id, res, nombreArchivo) => {
@@ -127,7 +116,7 @@ productImage = (id, res, nombreArchivo) => {
             borraArchivo(nombreArchivo, 'products');
             return res.status(500).json({
                 ok: false,
-                err
+                err: 'Producto no existe'
             });
         }
         if (!productDB) {
@@ -145,6 +134,7 @@ productImage = (id, res, nombreArchivo) => {
 
         productDB.save((err, saveProduct) => {
             if (err) {
+                borraArchivo(nombreArchivo, 'products');
                 return res.status(400).json({
                     ok: false,
                     err: {
@@ -159,6 +149,17 @@ productImage = (id, res, nombreArchivo) => {
             });
         })
     })
+}
+
+borraArchivo = (nombreImagen, tipo) => {
+    // Verificar si la imagen existe en el file system.
+    // Primero obtenemos la ruta.
+    let pathImagen = path.resolve(__dirname, `../../uploads/${tipo}/${nombreImagen}`);
+    // Verificamos si existe
+    if (fs.existsSync(pathImagen)) {
+        // Si exite lo borramos
+        fs.unlinkSync(pathImagen);
+    }
 }
 
 module.exports = app;

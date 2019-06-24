@@ -1,24 +1,30 @@
 {
     "name": "repuestos-api",
     "version": "1.0.0",
-    "description": "",
+    "description": "Aplicación para el manejo de venta de repuestos de automoviles.",
     "main": "index.js",
     "scripts": {
         "start": "nodemon server/server"
     },
-    "author": "",
+    "author": "Carlos Alfaro - DIGINET",
     "license": "ISC",
     "dependencies": {
         "bcrypt": "^3.0.2",
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",
         "express": "^4.16.4",
-        "express-fileupload": "^1.1.3-alpha.1",
+        "express-fileupload": "^1.1.4",
+        "fast-csv": "^2.5.0",
         "jsonwebtoken": "^8.5.1",
+        "moment": "^2.24.0",
         "mongoose": "^5.4.19",
         "mongoose-unique-validator": "^2.0.2",
+        "multer": "^1.4.1",
         "nodemon": "^1.18.10",
-        "underscore": "^1.9.1"
+        "pusher": "^2.2.0",
+        "redis": "^2.8.0",
+        "underscore": "^1.9.1",
+        "validator": "^10.11.0"
     },
     "devDependencies": {}
 }

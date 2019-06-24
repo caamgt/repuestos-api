@@ -10,9 +10,16 @@ app.get('/', (req, res) => {
 app.use(require('./login'));
 app.use(require('./user'));
 app.use(require('./product'));
-app.use(require('./category'));
-app.use(require('./upload'));
+app.use(require('./categoria'));
+app.use(require('./importCsv'));
 app.use(require('./images'));
+app.use(require('./profile'));
+app.use(require('./marca'));
+app.use(require('./linea'));
+app.use(require('./tipo'));
+app.use(require('./modelo'));
+app.use(require('./subcategoria'));
+app.use(require('./upload'));
 
 
 module.exports = app;
