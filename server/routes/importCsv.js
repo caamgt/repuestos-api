@@ -14,6 +14,7 @@ const { uploadFiles } = require('../middlewares/uploadFiles');
 app.post('/import', verificaToken, (req, res) => {
 
     uploadFiles(req, res, (err) => {
+        console.log(req.file);
         if (req.file === undefined) {
             return res.status(400).json({
                 ok: false,
