@@ -24,7 +24,7 @@
         "pusher": "^2.2.0",
         "redis": "^2.8.0",
         "underscore": "^1.9.1",
-        "validator": "^10.11.0"
+        "validator": "^13.7.0"
     },
     "devDependencies": {}
 }
